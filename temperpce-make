@@ -1,3 +1,7 @@
+DEVKITPRO := /c/workspace/forwarders/bubble2k16_forwarders/devkitPro
+DEVKITARM := $(DEVKITPRO)/devkitARM_r45
+CTRULIB := $(DEVKITPRO)/ctrulib
+
 #---------------------------------------------------------------------------------
 .SUFFIXES:
 #---------------------------------------------------------------------------------
@@ -44,7 +48,7 @@ INCLUDES	:=	include \
 			src/cores/temperpce/3ds \
 			src/cores/temperpce/arm \
 
-#ROMFS		:=	src/cores/temperpce/romfs
+ROMFS		:=	romfs
 
 #---------------------------------------------------------------------------------
 # options for code generation
@@ -210,7 +214,7 @@ endif
 #---------------------------------------------------------------------------------
 clean:
 	@echo clean ...
-	@rm -fr $(BUILD) $(TARGET).3dsx $(OUTPUT).smdh $(TARGET).elf
+	@rm -fr $(BUILD) $(TARGET).3dsx $(OUTPUT).smdh $(TARGET).elf $(TARGET).cia
 
 
 #---------------------------------------------------------------------------------

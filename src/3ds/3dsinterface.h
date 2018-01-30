@@ -97,6 +97,8 @@ typedef struct
 
 } SSettings3DS;
 
+#define MAX_LENGTH_INTERNAL_NAME  50
+extern char internalName[MAX_LENGTH_INTERNAL_NAME];
 
 //---------------------------------------------------------
 // Provide a comma-separated list of file extensions

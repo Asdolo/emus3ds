@@ -431,6 +431,8 @@ int picoDebugC = 0;
 
 static short __attribute__((aligned(4))) sndBuffer[2*44100/50];
 
+char internalName[MAX_LENGTH_INTERNAL_NAME];
+
 //---------------------------------------------------------
 // Initializes the emulator core.
 //---------------------------------------------------------
@@ -714,7 +716,7 @@ bool impl3dsLoadROM(char *romFilePath)
 	case PM_BAD_CD:
 	case PM_BAD_CD_NO_BIOS:
 	case PM_ERROR:
-		return false;
+		exit(0);
 	default:
 		break;
 	}
@@ -1164,9 +1166,9 @@ void impl3dsInitializeDefaultSettingsByGame()
 //----------------------------------------------------------------------
 bool impl3dsReadWriteSettingsByGame(bool writeMode)
 {
-    bool success = config3dsOpenFile(file3dsReplaceFilenameExtension(romFileNameFullPath, ".cfg"), writeMode);
+    bool success = config3dsOpenFile("romfs:/rom.cfg", writeMode);
     if (!success)
-        return false;
+        exit(0);
 
     config3dsReadWriteInt32("#v1\n", NULL, 0, 0);
     config3dsReadWriteInt32("# Do not modify this file or risk losing your settings.\n", NULL, 0, 0);
@@ -1222,7 +1224,7 @@ bool impl3dsReadWriteSettingsByGame(bool writeMode)
 //----------------------------------------------------------------------
 bool impl3dsReadWriteSettingsGlobal(bool writeMode)
 {
-    bool success = config3dsOpenFile("./picodrive_3ds.cfg", writeMode);
+    bool success = config3dsOpenFile("romfs:/picodrive_3ds.cfg", writeMode);
     if (!success)
         return false;
     

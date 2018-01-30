@@ -358,6 +358,7 @@ u32 input3dsValidButtonMappings[10] = { BTNNES_A, BTNNES_B, BTNNES_SELECT, BTNNE
 //---------------------------------------------------------
 u32 input3dsDefaultButtonMappings[10] = { BTNNES_A, BTNNES_B, BTNNES_A, BTNNES_B, 0, 0, 0, 0, BTNNES_SELECT, BTNNES_START };
 
+char internalName[MAX_LENGTH_INTERNAL_NAME];
 
 //---------------------------------------------------------
 // Initializes the emulator core.
@@ -481,7 +482,7 @@ bool impl3dsLoadROM(char *romFilePath)
 
 	nes = new NES(romFilePath);
 	if (nes->error)
-		return false;
+		exit(0);
 
 	//nes->ppu->SetScreenPtr( NULL, linecolor );
 	nes->ppu->SetScreenRGBAPtr( video3dsGetCurrentSoftwareBuffer(), linecolor );
@@ -980,9 +981,9 @@ void impl3dsInitializeDefaultSettingsByGame()
 //----------------------------------------------------------------------
 bool impl3dsReadWriteSettingsByGame(bool writeMode)
 {
-    bool success = config3dsOpenFile(file3dsReplaceFilenameExtension(romFileNameFullPath, ".cfg"), writeMode);
+    bool success = config3dsOpenFile("romfs:/rom.cfg", writeMode);
     if (!success)
-        return false;
+        exit(0);
 
     config3dsReadWriteInt32("#v1\n", NULL, 0, 0);
     config3dsReadWriteInt32("# Do not modify this file or risk losing your settings.\n", NULL, 0, 0);
@@ -1046,7 +1047,7 @@ bool impl3dsReadWriteSettingsByGame(bool writeMode)
 //----------------------------------------------------------------------
 bool impl3dsReadWriteSettingsGlobal(bool writeMode)
 {
-    bool success = config3dsOpenFile("./virtuanes_3ds.cfg", writeMode);
+    bool success = config3dsOpenFile("romfs:/virtuanes_3ds.cfg", writeMode);
     if (!success)
         return false;
     

@@ -14,6 +14,7 @@
 
 #include "3dstypes.h"
 #include "3dsfiles.h"
+#include "3dsinterface.h"
 
 
 static char currentDir[_MAX_PATH] = "";
@@ -126,10 +127,8 @@ void file3dsInitialize(void)
 const char * file3dsReplaceFilenameExtension (char *fileName, char *extension)
 {
 	static char	s[_MAX_PATH + 1];
-	char		drive[_MAX_PATH + 1], dir[_MAX_PATH + 1], fname[_MAX_PATH + 1], ext[_MAX_PATH + 1];
 
-	_splitpath(fileName, drive, dir, fname, ext);
-	snprintf(s, _MAX_PATH + 1, "%s/%s%s", dir, fname, extension);
+    snprintf(s, PATH_MAX + 1, "sdmc:/nsui_forwarders_data/%s/rom%s", internalName, extension);
 
 	return (s);
 }

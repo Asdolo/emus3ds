@@ -409,6 +409,8 @@ int soundSamplesPerSecond = 0;
 int audioFrame = 0;
 int emulatorFrame = 0;
 
+char internalName[MAX_LENGTH_INTERNAL_NAME];
+
 //---------------------------------------------------------
 // Initializes the emulator core.
 //---------------------------------------------------------
@@ -669,7 +671,7 @@ bool impl3dsLoadROM(char *romFilePath)
     strncpy(bramSaveFilepath, file3dsReplaceFilenameExtension(romFileNameFullPath, ".sav"), _MAX_PATH - 1);
 
     if (load_rom(romFilePath) == -1)
-        return false;
+        exit(0);
 
     SMenuItem *menuItem = menu3dsGetMenuItemByID(-1, 21000);
     if (menuItem != NULL)
@@ -1356,9 +1358,9 @@ void impl3dsInitializeDefaultSettingsByGame()
 //----------------------------------------------------------------------
 bool impl3dsReadWriteSettingsByGame(bool writeMode)
 {
-    bool success = config3dsOpenFile(file3dsReplaceFilenameExtension(romFileNameFullPath, ".cfg"), writeMode);
+    bool success = config3dsOpenFile("romfs:/rom.cfg", writeMode);
     if (!success)
-        return false;
+        exit(0);
 
     config3dsReadWriteInt32("#v1\n", NULL, 0, 0);
     config3dsReadWriteInt32("# Do not modify this file or risk losing your settings.\n", NULL, 0, 0);
@@ -1421,7 +1423,7 @@ bool impl3dsReadWriteSettingsByGame(bool writeMode)
 //----------------------------------------------------------------------
 bool impl3dsReadWriteSettingsGlobal(bool writeMode)
 {
-    bool success = config3dsOpenFile("./temperpce_3ds.cfg", writeMode);
+    bool success = config3dsOpenFile("romfs:/temperpce_3ds.cfg", writeMode);
     if (!success)
         return false;
     

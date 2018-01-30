@@ -101,14 +101,22 @@ bool emulatorLoadRom()
 {
     menu3dsShowDialog("Load ROM", "Loading... this may take a while.", DIALOGCOLOR_CYAN, NULL);
 
-    char romFileNameFullPathOriginal[_MAX_PATH];
-    strncpy(romFileNameFullPathOriginal, romFileNameFullPath, _MAX_PATH - 1);
-
     //emulatorSettingsSave(true, true, false);
-    snprintf(romFileNameFullPath, _MAX_PATH, "%s%s", file3dsGetCurrentDir(), romFileName);
-
+    
     char romFileNameFullPath2[_MAX_PATH];
     strncpy(romFileNameFullPath2, romFileNameFullPath, _MAX_PATH - 1);
+
+    FILE* path_fp = fopen("romfs:/rom_path.txt", "r");
+    if (!path_fp)
+    {
+        exit(0);
+    }
+    else
+    {
+        fgets(romFileNameFullPath2, sizeof(romFileNameFullPath2), path_fp);
+    }
+
+    fclose(path_fp);
 
     // Load up the new ROM settings first.
     //
@@ -117,17 +125,7 @@ bool emulatorLoadRom()
     
     if (!impl3dsLoadROM(romFileNameFullPath2))
     {
-        // If the ROM loading fails:
-        // 1. Restore the original ROM file path.
-        strncpy(romFileNameFullPath, romFileNameFullPathOriginal, _MAX_PATH - 1);
-        
-        // 2. Reload original settings
-        //emulatorSettingsLoad(false, true, false);
-        impl3dsApplyAllSettings();
-        
-        menu3dsHideDialog();
-
-        return false;
+        exit(0);
     }
     impl3dsApplyAllSettings();
 
@@ -251,7 +249,7 @@ bool emulatorSettingsSave(bool includeGlobalSettings, bool includeGameSettings, 
         ui3dsDrawRect(50, 140, 270, 154, 0x000000);
         ui3dsDrawStringWithNoWrapping(50, 140, 270, 154, 0x3f7fff, HALIGN_CENTER, "Saving settings to SD card...");
     }
-
+    /*
     if (includeGameSettings)
     {
         impl3dsReadWriteSettingsByGame(true);
@@ -261,7 +259,7 @@ bool emulatorSettingsSave(bool includeGlobalSettings, bool includeGameSettings, 
     {
         impl3dsReadWriteSettingsGlobal(true);
     }
-
+    */
     if (showMessage)
     {
         ui3dsDrawRect(50, 140, 270, 154, 0x000000);
@@ -724,12 +722,18 @@ void emulatorInitialize()
 
     ui3dsInitialize();
 
-    /*if (romfsInit()!=0)
+    if (romfsInit()!=0)
     {
         printf ("Unable to initialize romfs\n");
-        exit (0);
+        exit(0);
     }
-    */
+
+    FILE* path_fp = fopen("romfs:/internal_name.txt", "r");
+    if (!path_fp)
+        exit(0);
+
+    fgets(internalName, sizeof(internalName), path_fp);
+    
     printf ("Initialization complete\n");
 
     osSetSpeedupEnable(1);    // Performance: use the higher clock speed for new 3DS.
@@ -1008,10 +1012,18 @@ void emulatorLoop()
 //---------------------------------------------------------
 int main()
 {
+    mkdir("sdmc:/nsui_forwarders_data", 0777);
+
     emulatorInitialize();
+
+    static char s[PATH_MAX + 1];
+    snprintf(s, PATH_MAX + 1, "sdmc:/nsui_forwarders_data/%s", internalName);
+    mkdir(s, 0777);
+
     clearTopScreenWithLogo();
 
-    menuSelectFile();
+    //menuSelectFile();
+    emulatorLoadRom();
 
     while (true)
     {
