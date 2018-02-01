@@ -21,11 +21,3 @@ void debugWait()
         prevkey = key;                                                  
     }                                                                    
 }
-
-void clearBottomScreen()
-{
-    gfxSetDoubleBuffering(GFX_BOTTOM,false); 
-    gfxSwapBuffers(); 
-    consoleInit(GFX_BOTTOM, NULL); 
-    consoleClear(); 
-}

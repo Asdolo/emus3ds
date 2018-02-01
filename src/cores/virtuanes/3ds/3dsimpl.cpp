@@ -800,8 +800,8 @@ void impl3dsEmulationPaused()
 {
     if (nes)
     {
-        ui3dsDrawRect(50, 140, 270, 154, 0x000000);
-        ui3dsDrawStringWithNoWrapping(50, 140, 270, 154, 0x3f7fff, HALIGN_CENTER, "Saving SRAM to SD card...");
+        //ui3dsDrawRect(50, 140, 270, 154, 0x000000);
+        //ui3dsDrawStringWithNoWrapping(50, 140, 270, 154, 0x3f7fff, HALIGN_CENTER, "Saving SRAM to SD card...");
         
         nes->SaveSRAM();
     }

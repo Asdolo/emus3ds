@@ -151,39 +151,40 @@ AccessControlInfo:
     WaitSynchronizationN: 37
   InterruptNumbers:
   ServiceAccessControl:
+  - cfg:u
+  - fs:USER
+  - gsp::Gpu
+  - gsp::Lcd
+  - hid:USER
+  - ndm:u
+  - pxi:dev
   - APT:U
-  - $hioFIO
-  - $hostio0
-  - $hostio1
   - ac:u
   - boss:U
   - cam:u
   - cecd:u
-  - cfg:u
-  - dlp:FKCL
-  - dlp:SRVR
+  - csnd:SND
   - dsp::DSP
   - frd:u
-  - fs:USER
-  - gsp::Gpu
-  - hid:USER
   - http:C
+  - ir:USER
+  - ir:u
+  - ir:rst
+  - ldr:ro
   - mic:u
-  - ndm:u
   - news:u
   - nwm::UDS
   - ptm:u
-  - pxi:dev
+  - ptm:sysm
   - soc:U
   - ssl:C
   - y2r:u
-  - ldr:ro
-  - ir:USER
-  - ir:u
-  - csnd:SND
-  - ptm:sysm
-  - ir:rst
- 
+  - $hioFIO
+  - $hostio0
+  - $hostio1
+  - dlp:FKCL
+  - dlp:SRVR
+
 SystemControlInfo:
   SaveDataSize: 128KB # It doesn't use any save data.
   RemasterVersion: 0
@@ -191,6 +192,7 @@ SystemControlInfo:
   # JumpId: 0
   Dependency:
     ac: 0x0004013000002402L
+    #act: 0x0004013000003802
     am: 0x0004013000001502L
     boss: 0x0004013000003402L
     camera: 0x0004013000001602L
@@ -211,6 +213,7 @@ SystemControlInfo:
     mic: 0x0004013000002002L
     ndm: 0x0004013000002b02L
     news: 0x0004013000003502L
+    #nfc: 0x0004013000004002
     nim: 0x0004013000002c02L
     nwm: 0x0004013000002d02L
     pdn: 0x0004013000002102L

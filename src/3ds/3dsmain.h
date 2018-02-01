@@ -6,6 +6,10 @@
 extern char romFileNameFullPath[];
 extern char romFileNameLastSelected[];
 
+extern uint8_t* bottom_screen_buffer;
+
+void turn_bottom_screen(bool on);
+
 //---------------------------------------------------------
 // The different emulator states.
 //---------------------------------------------------------
@@ -20,6 +24,7 @@ extern char romFileNameLastSelected[];
 #define WAIT_HALF 1
 #define WAIT_NONE 2
 
-
+#define TURN_ON   true
+#define TURN_OFF  false
 
 #endif

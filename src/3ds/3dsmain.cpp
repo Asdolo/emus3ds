@@ -41,6 +41,8 @@ char *romFileName = 0;
 char romFileNameFullPath[_MAX_PATH];
 char romFileNameLastSelected[_MAX_PATH];
 
+u8* bottom_screen_buffer;
+off_t bottom_screen_buffer_size;
 
 
 //-------------------------------------------------------
@@ -78,6 +80,71 @@ void clearTopScreenWithLogo()
     }
 }
 
+inline void clearBottomScreen() {
+    uint bytes = 0;
+    switch (gfxGetScreenFormat(GFX_BOTTOM))
+    {
+        case GSP_RGBA8_OES:
+            bytes = 4;
+            break;
+
+        case GSP_BGR8_OES:
+            bytes = 3;
+            break;
+
+        case GSP_RGB565_OES:
+        case GSP_RGB5_A1_OES:
+        case GSP_RGBA4_OES:
+            bytes = 2;
+            break;
+    }
+
+    u8 *frame = gfxGetFramebuffer(GFX_BOTTOM, GFX_LEFT, NULL, NULL);
+    memset(frame, 0, 320 * 240 * bytes);
+}
+
+void renderBottomScreenImage()
+{
+    FILE *file = fopen("romfs:/bottom.bin", "rb");
+
+    if (file)
+    {
+        gfxSetScreenFormat(GFX_BOTTOM, GSP_BGR8_OES);
+        gfxSetDoubleBuffering(GFX_BOTTOM, false);
+        gfxSwapBuffersGpu();
+    
+        // seek to end of file
+        fseek(file, 0, SEEK_END);
+        // file pointer tells us the size
+        bottom_screen_buffer_size = ftell(file);
+        // seek back to start
+        fseek(file, 0, SEEK_SET);
+
+        if (bottom_screen_buffer != NULL) free(bottom_screen_buffer);
+
+        //allocate a buffer
+        bottom_screen_buffer = (u8*)(malloc(bottom_screen_buffer_size));
+        //read contents !
+        off_t bytesRead = fread(bottom_screen_buffer, 1, bottom_screen_buffer_size,file);
+        //close the file because we like being nice and tidy
+        fclose(file);
+
+        //We don't need double buffering in this example. In this way we can draw our image only once on screen.
+        gfxSetDoubleBuffering(GFX_BOTTOM, false);
+        u8* fb = gfxGetFramebuffer(GFX_BOTTOM, GFX_LEFT, NULL, NULL);
+        memcpy(fb, bottom_screen_buffer, bottom_screen_buffer_size);
+
+        gfxFlushBuffers();
+        gfxSwapBuffers();  
+    }
+    else
+    {  
+        // There's no bottom screen image, let's turn off the bottom screen
+        gspLcdInit();
+        GSPLCD_PowerOffBacklight(GSPLCD_SCREEN_BOTTOM);
+        gspLcdExit();
+    }
+}
 
 //----------------------------------------------------------------------
 // Start up menu.
@@ -99,7 +166,7 @@ bool emulatorSettingsSave(bool, bool, bool);
 
 bool emulatorLoadRom()
 {
-    menu3dsShowDialog("Load ROM", "Loading... this may take a while.", DIALOGCOLOR_CYAN, NULL);
+    //menu3dsShowDialog("Load ROM", "Loading... this may take a while.", DIALOGCOLOR_CYAN, NULL);
 
     //emulatorSettingsSave(true, true, false);
     
@@ -135,7 +202,7 @@ bool emulatorLoadRom()
     emulator.emulatorState = EMUSTATE_EMULATE;
 
     cheat3dsLoadCheatTextFile(file3dsReplaceFilenameExtension(romFileNameFullPath, ".chx"));
-    menu3dsHideDialog();
+    //menu3dsHideDialog();
 
     // Fix: Game-specific settings that never get saved.
     impl3dsCopyMenuToOrFromSettings(false);
@@ -245,9 +312,9 @@ bool emulatorSettingsSave(bool includeGlobalSettings, bool includeGameSettings, 
 {
     if (showMessage)
     {
-        consoleClear();
-        ui3dsDrawRect(50, 140, 270, 154, 0x000000);
-        ui3dsDrawStringWithNoWrapping(50, 140, 270, 154, 0x3f7fff, HALIGN_CENTER, "Saving settings to SD card...");
+        //consoleClear();
+        //ui3dsDrawRect(50, 140, 270, 154, 0x000000);
+        //ui3dsDrawStringWithNoWrapping(50, 140, 270, 154, 0x3f7fff, HALIGN_CENTER, "Saving settings to SD card...");
     }
     /*
     if (includeGameSettings)
@@ -262,7 +329,7 @@ bool emulatorSettingsSave(bool includeGlobalSettings, bool includeGameSettings, 
     */
     if (showMessage)
     {
-        ui3dsDrawRect(50, 140, 270, 154, 0x000000);
+        //ui3dsDrawRect(50, 140, 270, 154, 0x000000);
     }
 
     return true;
@@ -331,8 +398,8 @@ void menuSelectFile(void)
                 else
                 {
                     menu3dsHideMenu();
-                    consoleInit(GFX_BOTTOM, NULL);
-                    consoleClear();
+                    //consoleInit(GFX_BOTTOM, NULL);
+                    //consoleClear();
                     return;
                 }
             }
@@ -393,6 +460,11 @@ bool menuSelectedChanged(int ID, int value)
 //----------------------------------------------------------------------
 void menuPause()
 {
+    // Let's turn on the bottom screen just in case it's turned off
+    gspLcdInit();
+    GSPLCD_PowerOnBacklight(GSPLCD_SCREEN_BOTTOM);
+    gspLcdExit();
+
     gfxSetDoubleBuffering(GFX_BOTTOM, true);
     
     bool settingsUpdated = false;
@@ -647,7 +719,8 @@ void menuPause()
     if (returnToEmulation)
     {
         emulator.emulatorState = EMUSTATE_EMULATE;
-        consoleClear();
+        //consoleClear();
+        renderBottomScreenImage();
     }
 
     // Loads the new ROM if a ROM was selected.
@@ -738,7 +811,7 @@ void emulatorInitialize()
 
     osSetSpeedupEnable(1);    // Performance: use the higher clock speed for new 3DS.
 
-    enableExitHook();
+    enableAptHooks();
 
     emulatorSettingsLoad(true, false, true);
 
@@ -753,6 +826,8 @@ void emulatorInitialize()
 //--------------------------------------------------------
 void emulatorFinalize()
 {
+    free(bottom_screen_buffer);
+    
     consoleClear();
 
     impl3dsFinalize();
@@ -820,9 +895,9 @@ void updateFrameCount()
         int fpsmul10 = (int)((float)600 / timeDelta);
 
 #if !defined(EMU_RELEASE) && !defined(DEBUG_CPU) && !defined(DEBUG_APU)
-        consoleClear();
+        //consoleClear();
 #endif
-
+        /*
         if (settings3DS.HideUnnecessaryBottomScrText == 0)
         {
             if (framesSkippedCount)
@@ -833,6 +908,7 @@ void updateFrameCount()
             ui3dsDrawRect(2, 2, 200, 16, 0x000000);
             ui3dsDrawStringWithNoWrapping(2, 2, 200, 16, 0x7f7f7f, HALIGN_LEFT, frameCountBuffer);
         }
+        */
 
         frameCount60 = 60;
         framesSkippedCount = 0;
@@ -874,6 +950,7 @@ void emulatorLoop()
     long emuFrameTotalAccurateTicks = 0;
 
     bool firstFrame = true;
+    appSuspended = 0;
 
     gpu3dsResetState();
 
@@ -886,13 +963,16 @@ void emulatorLoop()
     bool skipDrawingFrame = false;
 
     // Reinitialize the console.
-    consoleInit(GFX_BOTTOM, NULL);
+    //renderBottomScreenImage();
+    //consoleInit(GFX_BOTTOM, NULL);
     gfxSetDoubleBuffering(GFX_BOTTOM, false);
-    menu3dsDrawBlackScreen();
+    //menu3dsDrawBlackScreen();
+    /*
     if (settings3DS.HideUnnecessaryBottomScrText == 0)
     {
         ui3dsDrawStringWithNoWrapping(0, 100, 320, 115, 0x7f7f7f, HALIGN_CENTER, "Touch screen for menu");
     }
+    */
 
     snd3dsStartPlaying();
 
@@ -903,11 +983,11 @@ void emulatorLoop()
         startFrameTick = svcGetSystemTick();
         aptMainLoop();
 
-        if (appExiting)
+        if (appExiting || appSuspended)
             break;
 
         gpu3dsStartNewFrame();
-        gpu3dsCheckSlider();
+        //gpu3dsCheckSlider();
         updateFrameCount();
 
     	input3dsScanInputForEmulation();
@@ -1020,10 +1100,12 @@ int main()
     snprintf(s, PATH_MAX + 1, "sdmc:/nsui_forwarders_data/%s", internalName);
     mkdir(s, 0777);
 
-    clearTopScreenWithLogo();
-
+    //clearTopScreenWithLogo();
+    
     //menuSelectFile();
     emulatorLoadRom();
+
+    renderBottomScreenImage();
 
     while (true)
     {

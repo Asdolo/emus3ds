@@ -1145,7 +1145,7 @@ bool gpu3dsInitialize()
     gfxInit	(GPU3DS.screenFormat, GPU3DS.screenFormat, false);
 	GPU_Init(NULL);
 
-	gfxSet3D(true);
+	gfxSet3D(false);
 
     u8 val = 0;
     APT_CheckNew3DS(&val);
@@ -1184,7 +1184,7 @@ bool gpu3dsInitialize()
 
     // Initialize the bottom screen for console output.
     //
-    consoleInit(GFX_BOTTOM, NULL);
+    //consoleInit(GFX_BOTTOM, NULL);
 
     // Create the command buffers
     //
