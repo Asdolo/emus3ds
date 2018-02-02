@@ -247,7 +247,7 @@ SMenuItem optionsForDisk[] =
 // marked 'do not modify'.
 //-------------------------------------------------------
 SMenuItem emulatorMenu[] = {
-    MENU_MAKE_HEADER2   ("Emulator"),               // Do not modify
+    MENU_MAKE_HEADER2   ("Game"),               // Do not modify
     MENU_MAKE_ACTION    (1000, "  Resume Game"),    // Do not modify
     MENU_MAKE_PICKER2   (30000,"  Choose Disk", "", optionsForDisk, DIALOGCOLOR_CYAN),
     MENU_MAKE_HEADER2   (""),

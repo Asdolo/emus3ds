@@ -38,7 +38,7 @@ void cheat3dsClearCheatsFromMenu()
 {
     cheatCount = 0;
 
-    cheatMenu[0] = MENU_MAKE_DISABLED("No cheats available for this game.");
+    cheatMenu[0] = MENU_MAKE_HEADER2("Cheats");
     cheatMenu[1] = MENU_MAKE_LASTITEM();
 }
 
@@ -54,12 +54,12 @@ void cheat3dsAddCheatToMenu(bool enabled, char *name, char *code)
     strncpy(cheats[cheatCount].name, name, 99);    
     strncpy(cheats[cheatCount].code, code, 99);    
 
-    cheatMenu[cheatCount] = MENU_MAKE_CHECKBOX(
+    cheatMenu[cheatCount + 1] = MENU_MAKE_CHECKBOX(
         cheatCount + 50000, cheats[cheatCount].name, enabled);
 
     cheatCount++;
 
-    cheatMenu[cheatCount] = MENU_MAKE_LASTITEM();
+    cheatMenu[cheatCount + 1] = MENU_MAKE_LASTITEM();
 }
 
 
@@ -74,6 +74,25 @@ bool cheat3dsLoadCheatTextFile (const char *filename)
     FILE *fp = fopen (filename, "r");
     if (fp == NULL)
     {
+        // There's no cheat file. Show a message
+
+        static char message[PATH_MAX + 1];
+        snprintf(message, PATH_MAX + 1, "          %s/", internalName);
+        
+        cheatMenu[1] = MENU_MAKE_DISABLED("");
+        cheatMenu[2] = MENU_MAKE_DISABLED("    No cheats available for this game. ");
+        cheatMenu[3] = MENU_MAKE_DISABLED("");
+        cheatMenu[4] = MENU_MAKE_DISABLED("    To enable cheats:  ");
+        cheatMenu[5] = MENU_MAKE_DISABLED("      Copy your .CHX file to the path: ");
+        cheatMenu[6] = MENU_MAKE_DISABLED("      sd:/");
+        cheatMenu[7] = MENU_MAKE_DISABLED("        nsui_forwarders_data/");
+        cheatMenu[8] = MENU_MAKE_DISABLED(message);
+        cheatMenu[9] = MENU_MAKE_DISABLED("            rom.chx");
+        cheatMenu[10] = MENU_MAKE_DISABLED("");
+        cheatMenu[11] = MENU_MAKE_DISABLED("      (The file has to be named \"rom.chx\")");
+        cheatMenu[12] = MENU_MAKE_DISABLED("");
+        cheatMenu[13] = MENU_MAKE_DISABLED("    Refer to the NSUI thread for the .CHX file format. ");
+        cheatMenu[14] = MENU_MAKE_LASTITEM();
         return false;
     }
 

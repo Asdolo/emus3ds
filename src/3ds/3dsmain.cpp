@@ -338,94 +338,6 @@ bool emulatorSettingsSave(bool includeGlobalSettings, bool includeGameSettings, 
 
 
 //----------------------------------------------------------------------
-// Start up menu.
-//----------------------------------------------------------------------
-void menuSelectFile(void)
-{
-    gfxSetDoubleBuffering(GFX_BOTTOM, true);
-    
-    fileGetAllFiles();
-    int previousFileID = fileFindLastSelectedFile();
-    menu3dsClearMenuTabs();
-    menu3dsAddTab("Emulator", emulatorNewMenu);
-    menu3dsAddTab("Select ROM", fileMenu);
-    menu3dsSetTabSubTitle(0, NULL);
-    menu3dsSetTabSubTitle(1, file3dsGetCurrentDir());
-    menu3dsSetCurrentMenuTab(1);
-    if (previousFileID >= 0)
-        menu3dsSetSelectedItemIndexByID(1, previousFileID);
-    menu3dsSetTransferGameScreen(false);
-
-    bool animateMenu = true;
-    int selection = 0;
-    do
-    {
-        if (appExiting)
-            return;
-
-        selection = menu3dsShowMenu(NULL, animateMenu);
-        animateMenu = false;
-
-        if (selection >= 0 && selection < 1000)
-        {
-            // Load ROM
-            //
-            //romFileName = romFileNames[selection];
-            romFileName = fileList[selection].c_str();
-            strncpy(romFileNameLastSelected, romFileName, _MAX_PATH);
-            if (romFileName[0] == 1)
-            {
-                if (strcmp(romFileName, "\x01 ..") == 0)
-                    file3dsGoToParentDirectory();
-                else
-                    file3dsGoToChildDirectory(&romFileName[2]);
-
-                fileGetAllFiles();
-                menu3dsClearMenuTabs();
-                menu3dsAddTab("Emulator", emulatorNewMenu);
-                menu3dsAddTab("Select ROM", fileMenu);
-                menu3dsSetCurrentMenuTab(1);
-                menu3dsSetTabSubTitle(1, file3dsGetCurrentDir());
-                selection = -1;
-            }
-            else
-            {
-                if (!emulatorLoadRom())
-                {
-                    menu3dsShowDialog("Load ROM", "Hmm... unable to load ROM.", DIALOGCOLOR_RED, optionsForOk);
-                    menu3dsHideDialog();
-                }
-                else
-                {
-                    menu3dsHideMenu();
-                    //consoleInit(GFX_BOTTOM, NULL);
-                    //consoleClear();
-                    return;
-                }
-            }
-        }
-        else if (selection == 6001)
-        {
-            int result = menu3dsShowDialog("Exit",  "Leaving so soon?", DIALOGCOLOR_RED, optionsForNoYes);
-            menu3dsHideDialog();
-
-            if (result == 1)
-            {
-                emulator.emulatorState = EMUSTATE_END;
-                return;
-            }
-        }
-
-        selection = -1;     // Bug fix: Fixes crashing when setting options before any ROMs are loaded.
-    }
-    while (selection == -1);
-
-    menu3dsHideMenu();
-
-}
-
-
-//----------------------------------------------------------------------
 // Checks if file exists.
 //----------------------------------------------------------------------
 bool IsFileExists(const char * filename) {
@@ -474,22 +386,22 @@ void menuPause()
 
 
     menu3dsClearMenuTabs();
-    menu3dsAddTab("Emulator", emulatorMenu);
-    menu3dsAddTab("Options", optionMenu);
-    menu3dsAddTab("Controls", controlsMenu);
+    menu3dsAddTab("Game", emulatorMenu);
+    //menu3dsAddTab("Options", optionMenu);
+    //menu3dsAddTab("Controls", controlsMenu);
     menu3dsAddTab("Cheats", cheatMenu);
-    menu3dsAddTab("Select ROM", fileMenu);
+    //menu3dsAddTab("Select ROM", fileMenu);
 
     impl3dsCopyMenuToOrFromSettings(false);
 
     int previousFileID = fileFindLastSelectedFile();
     menu3dsSetTabSubTitle(0, NULL);
     menu3dsSetTabSubTitle(1, NULL);
-    menu3dsSetTabSubTitle(2, NULL);
-    menu3dsSetTabSubTitle(3, NULL);
-    menu3dsSetTabSubTitle(4, file3dsGetCurrentDir());
-    if (previousFileID >= 0)
-        menu3dsSetSelectedItemIndexByID(4, previousFileID);
+    //menu3dsSetTabSubTitle(2, NULL);
+    //menu3dsSetTabSubTitle(3, NULL);
+    //menu3dsSetTabSubTitle(4, file3dsGetCurrentDir());
+    //if (previousFileID >= 0)
+    //    menu3dsSetSelectedItemIndexByID(4, previousFileID);
     menu3dsSetCurrentMenuTab(0);
     menu3dsSetTransferGameScreen(true);
 
@@ -528,13 +440,13 @@ void menuPause()
 
                 fileGetAllFiles();
                 menu3dsClearMenuTabs();
-                menu3dsAddTab("Emulator", emulatorMenu);
-                menu3dsAddTab("Options", optionMenu);
-                menu3dsAddTab("Controls", controlsMenu);
+                menu3dsAddTab("Game", emulatorMenu);
+                //menu3dsAddTab("Options", optionMenu);
+                //menu3dsAddTab("Controls", controlsMenu);
                 menu3dsAddTab("Cheats", cheatMenu);
-                menu3dsAddTab("Select ROM", fileMenu);
-                menu3dsSetCurrentMenuTab(4);
-                menu3dsSetTabSubTitle(4, file3dsGetCurrentDir());
+                //menu3dsAddTab("Select ROM", fileMenu);
+                menu3dsSetCurrentMenuTab(0);
+                //menu3dsSetTabSubTitle(4, file3dsGetCurrentDir());
             }
             else
             {
@@ -612,8 +524,7 @@ void menuPause()
             bool result = impl3dsLoadState(slot);
             if (result)
             {
-                emulator.emulatorState = EMUSTATE_EMULATE;
-                consoleClear();
+                returnToEmulation = true;
                 break;
             }
             else
@@ -672,9 +583,7 @@ void menuPause()
             if (result == 1)
             {
                 impl3dsResetConsole();
-                emulator.emulatorState = EMUSTATE_EMULATE;
-                consoleClear();
-
+                returnToEmulation = true;
                 break;
             }
             
@@ -719,7 +628,6 @@ void menuPause()
     if (returnToEmulation)
     {
         emulator.emulatorState = EMUSTATE_EMULATE;
-        //consoleClear();
         renderBottomScreenImage();
     }
 
@@ -1102,7 +1010,6 @@ int main()
 
     //clearTopScreenWithLogo();
     
-    //menuSelectFile();
     emulatorLoadRom();
 
     renderBottomScreenImage();
