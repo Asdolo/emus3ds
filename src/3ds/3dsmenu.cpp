@@ -500,11 +500,6 @@ void menu3dsDrawDialog()
 //-------------------------------------------------------
 void menu3dsDrawEverything(int menuFrame = 0, int menuItemsFrame = 0, int dialogFrame = 0)
 {
-    gfxSetScreenFormat(GFX_BOTTOM, GSP_RGB565_OES);
-    gfxSetDoubleBuffering(GFX_BOTTOM, false);
-    gfxSwapBuffersGpu();
-    menu3dsDrawBlackScreen();
-
     if (!isDialog)
     {
         int y = 0 + menuFrame * menuFrame * 120 / 32;

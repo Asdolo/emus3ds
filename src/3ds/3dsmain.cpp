@@ -454,6 +454,10 @@ void menuPause()
     GSPLCD_PowerOnBacklight(GSPLCD_SCREEN_BOTTOM);
     gspLcdExit();
 
+    gfxSetScreenFormat(GFX_BOTTOM, GSP_RGB565_OES);
+    gfxSwapBuffersGpu();
+    menu3dsDrawBlackScreen();
+
     gfxSetDoubleBuffering(GFX_BOTTOM, true);
     
     bool settingsUpdated = false;
