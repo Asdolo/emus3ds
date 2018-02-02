@@ -1134,6 +1134,11 @@ void gpu3dsSetTextureOffset(float u, float v)
 }
 
 
+void gpu3dsFixHang()
+{
+    gpu3dsInitializeRenderTargetToTopFrameBuffer();
+    gpu3dsFlush();
+}
 
 bool gpu3dsInitialize()
 {

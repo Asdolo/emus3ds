@@ -872,6 +872,8 @@ void impl3dsRenderDrawTextureToFrameBuffer()
             gpu3dsSetTextureEnvironmentReplaceColor();
             gpu3dsDrawRectangle(0, 0, 72, 240, 0, 0x000000ff);
             gpu3dsDrawRectangle(328, 0, 400, 240, 0, 0x000000ff);
+			
+			renderTopScreenBorder();
 
             gpu3dsSetTextureEnvironmentReplaceTexture0();
             gpu3dsBindTextureMainScreen(video3dsGetPreviousScreenTexture(), GPU_TEXUNIT0);
@@ -882,6 +884,8 @@ void impl3dsRenderDrawTextureToFrameBuffer()
             gpu3dsSetTextureEnvironmentReplaceColor();
             gpu3dsDrawRectangle(0, 0, 40, 240, 0, 0x000000ff);
             gpu3dsDrawRectangle(360, 0, 400, 240, 0, 0x000000ff);
+            
+			renderTopScreenBorder();
 
             gpu3dsSetTextureEnvironmentReplaceTexture0();
             gpu3dsBindTextureMainScreen(video3dsGetPreviousScreenTexture(), GPU_TEXUNIT0);
@@ -892,16 +896,19 @@ void impl3dsRenderDrawTextureToFrameBuffer()
             gpu3dsSetTextureEnvironmentReplaceColor();
             gpu3dsDrawRectangle(0, 0, 40, 240, 0, 0x000000ff);
             gpu3dsDrawRectangle(360, 0, 400, 240, 0, 0x000000ff);
+            
+			renderTopScreenBorder();
 
             gpu3dsSetTextureEnvironmentReplaceTexture0();
             gpu3dsBindTextureMainScreen(video3dsGetPreviousScreenTexture(), GPU_TEXUNIT0);
 			gpu3dsAddQuadVertexes(40, 0, 360, 240, tx1, ty1, tx2, ty2, 0);
 			break;
 		case 5:
-            // 5:4 PAL Fit (300x240)
-            gpu3dsSetTextureEnvironmentReplaceColor();
+            // 5:4 PAL Fit (300x240)ureEnvironmentReplaceColor();
             gpu3dsDrawRectangle(0, 0, 50, 240, 0, 0x000000ff);
             gpu3dsDrawRectangle(350, 0, 400, 240, 0, 0x000000ff);
+
+			renderTopScreenBorder();
 
             gpu3dsSetTextureEnvironmentReplaceTexture0();
             gpu3dsBindTextureMainScreen(video3dsGetPreviousScreenTexture(), GPU_TEXUNIT0);
@@ -918,6 +925,8 @@ void impl3dsRenderDrawTextureToFrameBuffer()
             gpu3dsSetTextureEnvironmentReplaceColor();
             gpu3dsDrawRectangle(0, 0, 40, 240, 0, 0x000000ff);
             gpu3dsDrawRectangle(360, 0, 400, 240, 0, 0x000000ff);
+            
+			renderTopScreenBorder();
 
             gpu3dsSetTextureEnvironmentReplaceTexture0();
             gpu3dsBindTextureMainScreen(video3dsGetPreviousScreenTexture(), GPU_TEXUNIT0);
@@ -928,6 +937,8 @@ void impl3dsRenderDrawTextureToFrameBuffer()
             gpu3dsSetTextureEnvironmentReplaceColor();
             gpu3dsDrawRectangle(0, 0, 50, 240, 0, 0x000000ff);
             gpu3dsDrawRectangle(350, 0, 400, 240, 0, 0x000000ff);
+
+			renderTopScreenBorder();
 
             gpu3dsSetTextureEnvironmentReplaceTexture0();
             gpu3dsBindTextureMainScreen(video3dsGetPreviousScreenTexture(), GPU_TEXUNIT0);

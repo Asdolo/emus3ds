@@ -661,7 +661,7 @@ int lastWait = 0;
 
 void impl3dsRenderDrawTextureToFrameBuffer()
 {
-	t3dsStartTiming(14, "Draw Texture");	
+	t3dsStartTiming(14, "Draw Texture");
 
     // Draw a black colored rectangle covering the entire screen.
     //
@@ -672,6 +672,8 @@ void impl3dsRenderDrawTextureToFrameBuffer()
             gpu3dsDrawRectangle(0, 0, 72, 240, 0, 0x000000ff);
             gpu3dsDrawRectangle(328, 0, 400, 240, 0, 0x000000ff);
 
+            renderTopScreenBorder();
+
             gpu3dsSetTextureEnvironmentReplaceTexture0();
             gpu3dsBindTextureMainScreen(video3dsGetPreviousScreenTexture(), GPU_TEXUNIT0);
 			gpu3dsAddQuadVertexes(72, 0, 328, 240, 8, 0, 264, 240, 0);
@@ -680,6 +682,8 @@ void impl3dsRenderDrawTextureToFrameBuffer()
             gpu3dsSetTextureEnvironmentReplaceColor();
             gpu3dsDrawRectangle(0, 0, 40, 240, 0, 0x000000ff);
             gpu3dsDrawRectangle(360, 0, 400, 240, 0, 0x000000ff);
+
+			renderTopScreenBorder();
 
             gpu3dsSetTextureEnvironmentReplaceTexture0();
             gpu3dsBindTextureMainScreen(video3dsGetPreviousScreenTexture(), GPU_TEXUNIT0);
@@ -694,6 +698,8 @@ void impl3dsRenderDrawTextureToFrameBuffer()
             gpu3dsSetTextureEnvironmentReplaceColor();
             gpu3dsDrawRectangle(0, 0, 40, 240, 0, 0x000000ff);
             gpu3dsDrawRectangle(360, 0, 400, 240, 0, 0x000000ff);
+
+			renderTopScreenBorder();
 
             gpu3dsSetTextureEnvironmentReplaceTexture0();
             gpu3dsBindTextureMainScreen(video3dsGetPreviousScreenTexture(), GPU_TEXUNIT0);

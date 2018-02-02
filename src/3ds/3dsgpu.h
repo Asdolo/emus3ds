@@ -95,6 +95,7 @@ extern SGPU3DS GPU3DS;
 
 
 
+void gpu3dsFixHang();
 bool gpu3dsInitialize();
 void gpu3dsFinalize();
 

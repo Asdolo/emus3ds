@@ -918,6 +918,8 @@ void impl3dsRenderDrawTextureToTopFrameBuffer(SGPUTexture *texture, int tx_offse
     gpu3dsDrawRectangle(0, 0, sideBorderWidth, 240, 0, 0x000000ff);
     gpu3dsDrawRectangle(400 - sideBorderWidth, 0, 400, 240, 0, 0x000000ff);
 
+    renderTopScreenBorder();
+
     gpu3dsUseShader(0);
     gpu3dsSetTextureEnvironmentReplaceTexture0();
     gpu3dsBindTextureMainScreen(texture, GPU_TEXUNIT0);

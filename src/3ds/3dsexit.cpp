@@ -40,10 +40,12 @@ void handleAptHook(APT_HookType hook, void* param)
             break;
         case APTHOOK_ONRESTORE:
         case APTHOOK_ONWAKEUP:
+            gpu3dsFixHang();
+            
             gspLcdInit();
-            if (bottom_screen_buffer == NULL)
+            if (bottom_screen_buffer == NULL && emulator.emulatorState == EMUSTATE_EMULATE)
             {
-                // There's no bottom screen image, let's turn off the bottom screen
+                // There's no bottom screen image AND the menu is closed, let's turn off the bottom screen
                 GSPLCD_PowerOffBacklight(GSPLCD_SCREEN_BOTTOM);
             }
             else
@@ -51,6 +53,7 @@ void handleAptHook(APT_HookType hook, void* param)
                 GSPLCD_PowerOnBacklight(GSPLCD_SCREEN_BOTTOM);
             }
             gspLcdExit();
+            
             appSuspended = 1;
             break;
     }

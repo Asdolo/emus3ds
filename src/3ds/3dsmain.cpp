@@ -30,6 +30,7 @@
 
 #include "3dsinterface.h"
 #include "3dscheat.h"
+#include "3dsimpl_gpu.h"
 
 
 SEmulator emulator;
@@ -43,6 +44,8 @@ char romFileNameLastSelected[_MAX_PATH];
 
 u8* bottom_screen_buffer;
 off_t bottom_screen_buffer_size;
+
+SGPUTexture *borderTexture;
 
 
 //-------------------------------------------------------
@@ -144,6 +147,80 @@ void renderBottomScreenImage()
         GSPLCD_PowerOffBacklight(GSPLCD_SCREEN_BOTTOM);
         gspLcdExit();
     }
+}
+
+void renderTopScreenBorder()
+{
+    // Copy the border texture  to the 3DS frame
+    gpu3dsBindTexture(borderTexture, GPU_TEXUNIT0);
+    gpu3dsSetTextureEnvironmentReplaceTexture0();
+    gpu3dsDisableStencilTest();
+    gpu3dsAddQuadVertexes(
+        0,
+        0,
+        400,
+        240,
+        settings3DS.CropPixels,
+        settings3DS.CropPixels,
+        400 - settings3DS.CropPixels,
+        240 - settings3DS.CropPixels,
+        0.1f);
+
+    gpu3dsDrawVertexes();
+}
+
+static u32 screen_next_pow_2(u32 i) {
+    i--;
+    i |= i >> 1;
+    i |= i >> 2;
+    i |= i >> 4;
+    i |= i >> 8;
+    i |= i >> 16;
+    i++;
+
+    return i;
+}
+
+
+bool impl3dsLoadBorderTexture(char *imgFilePath)
+{
+  unsigned char* src;
+  unsigned width, height;
+    int error = lodepng_decode32_file(&src, &width, &height, imgFilePath);
+    if (!error && width == 400 && height == 240)
+    {
+      u32 pow2Width = screen_next_pow_2(width);
+          u32 pow2Height = screen_next_pow_2(height);
+
+      u8* pow2Tex = (u8*)linearAlloc(pow2Width * pow2Height * 4);
+      memset(pow2Tex, 0, pow2Width * pow2Height * 4);
+      for(u32 x = 0; x < width; x++) {
+          for(u32 y = 0; y < height; y++) {
+              u32 dataPos = (y * width + x) * 4;
+              u32 pow2TexPos = (y * pow2Width + x) * 4;
+
+              pow2Tex[pow2TexPos + 0] = ((u8*) src)[dataPos + 3];
+              pow2Tex[pow2TexPos + 1] = ((u8*) src)[dataPos + 2];
+              pow2Tex[pow2TexPos + 2] = ((u8*) src)[dataPos + 1];
+              pow2Tex[pow2TexPos + 3] = ((u8*) src)[dataPos + 0];
+          }
+      }
+      
+      GSPGPU_FlushDataCache(pow2Tex, pow2Width * pow2Height * 4);
+
+      borderTexture = gpu3dsCreateTextureInVRAM(pow2Width, pow2Height, GPU_RGBA8);
+
+      GX_DisplayTransfer((u32*)pow2Tex,GX_BUFFER_DIM(pow2Width, pow2Height),(u32*)borderTexture->PixelData,GX_BUFFER_DIM(pow2Width, pow2Height),
+      GX_TRANSFER_FLIP_VERT(1) | GX_TRANSFER_OUT_TILED(1) | GX_TRANSFER_RAW_COPY(0) | GX_TRANSFER_IN_FORMAT(GPU_RGBA8) |
+      GX_TRANSFER_OUT_FORMAT((u32) GPU_RGBA8) | GX_TRANSFER_SCALING(GX_TRANSFER_SCALE_NO));
+
+      gspWaitForPPF();
+      
+      free(src);
+        linearFree(pow2Tex);
+      return true;
+    }
+  return false;
 }
 
 //----------------------------------------------------------------------
@@ -392,9 +469,9 @@ void menuPause()
     menu3dsAddTab("Cheats", cheatMenu);
     //menu3dsAddTab("Select ROM", fileMenu);
 
-    impl3dsCopyMenuToOrFromSettings(false);
+    //impl3dsCopyMenuToOrFromSettings(false);
 
-    int previousFileID = fileFindLastSelectedFile();
+    //int previousFileID = fileFindLastSelectedFile();
     menu3dsSetTabSubTitle(0, NULL);
     menu3dsSetTabSubTitle(1, NULL);
     //menu3dsSetTabSubTitle(2, NULL);
@@ -615,14 +692,6 @@ void menuPause()
 
     menu3dsHideMenu();
 
-    // Save settings and cheats
-    //
-    if (!settingsSaved && impl3dsCopyMenuToOrFromSettings(true))
-    {
-        emulatorSettingsSave(true, true, true);
-    }
-    impl3dsApplyAllSettings();
-
     cheat3dsSaveCheatTextFile (file3dsReplaceFilenameExtension(romFileNameFullPath, ".chx"));
 
     if (returnToEmulation)
@@ -714,6 +783,9 @@ void emulatorInitialize()
         exit(0);
 
     fgets(internalName, sizeof(internalName), path_fp);
+
+    if (!impl3dsLoadBorderTexture("romfs:/border.png"))
+        borderTexture = gpu3dsCreateTextureInVRAM(400, 240, GPU_RGBA8);
     
     printf ("Initialization complete\n");
 

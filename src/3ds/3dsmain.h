@@ -9,6 +9,7 @@ extern char romFileNameLastSelected[];
 extern uint8_t* bottom_screen_buffer;
 
 void turn_bottom_screen(bool on);
+void renderTopScreenBorder();
 
 //---------------------------------------------------------
 // The different emulator states.
