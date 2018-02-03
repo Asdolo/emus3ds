@@ -45,6 +45,7 @@ char romFileNameLastSelected[_MAX_PATH];
 u8* bottom_screen_buffer;
 off_t bottom_screen_buffer_size;
 
+u8* border_image_texture_buffer = NULL;
 SGPUTexture *borderTexture;
 
 
@@ -181,6 +182,16 @@ static u32 screen_next_pow_2(u32 i) {
     return i;
 }
 
+void impl3dsClearBorderTexture()
+{
+    if (borderTexture == NULL) return;
+
+    GX_MemoryFill(
+        (u32*)borderTexture->PixelData, 0x00000000,
+        (u32*)&((u8*)borderTexture->PixelData)[borderTexture->BufferSize],
+        GX_FILL_TRIGGER | GX_FILL_32BIT_DEPTH,
+        NULL, 0x00000000, NULL, 0);
+}
 
 bool impl3dsLoadBorderTexture(char *imgFilePath)
 {
@@ -190,34 +201,34 @@ bool impl3dsLoadBorderTexture(char *imgFilePath)
     if (!error && width == 400 && height == 240)
     {
       u32 pow2Width = screen_next_pow_2(width);
-          u32 pow2Height = screen_next_pow_2(height);
+      u32 pow2Height = screen_next_pow_2(height);
 
-      u8* pow2Tex = (u8*)linearAlloc(pow2Width * pow2Height * 4);
-      memset(pow2Tex, 0, pow2Width * pow2Height * 4);
+      border_image_texture_buffer = (u8*)linearAlloc(pow2Width * pow2Height * 4);
+
+      memset(border_image_texture_buffer, 0, pow2Width * pow2Height * 4);
       for(u32 x = 0; x < width; x++) {
           for(u32 y = 0; y < height; y++) {
               u32 dataPos = (y * width + x) * 4;
               u32 pow2TexPos = (y * pow2Width + x) * 4;
 
-              pow2Tex[pow2TexPos + 0] = ((u8*) src)[dataPos + 3];
-              pow2Tex[pow2TexPos + 1] = ((u8*) src)[dataPos + 2];
-              pow2Tex[pow2TexPos + 2] = ((u8*) src)[dataPos + 1];
-              pow2Tex[pow2TexPos + 3] = ((u8*) src)[dataPos + 0];
+              border_image_texture_buffer[pow2TexPos + 0] = ((u8*) src)[dataPos + 3];
+              border_image_texture_buffer[pow2TexPos + 1] = ((u8*) src)[dataPos + 2];
+              border_image_texture_buffer[pow2TexPos + 2] = ((u8*) src)[dataPos + 1];
+              border_image_texture_buffer[pow2TexPos + 3] = ((u8*) src)[dataPos + 0];
           }
       }
       
-      GSPGPU_FlushDataCache(pow2Tex, pow2Width * pow2Height * 4);
+      GSPGPU_FlushDataCache(border_image_texture_buffer, pow2Width * pow2Height * 4);
 
       borderTexture = gpu3dsCreateTextureInVRAM(pow2Width, pow2Height, GPU_RGBA8);
 
-      GX_DisplayTransfer((u32*)pow2Tex,GX_BUFFER_DIM(pow2Width, pow2Height),(u32*)borderTexture->PixelData,GX_BUFFER_DIM(pow2Width, pow2Height),
+      GX_DisplayTransfer((u32*)border_image_texture_buffer,GX_BUFFER_DIM(pow2Width, pow2Height),(u32*)borderTexture->PixelData,GX_BUFFER_DIM(pow2Width, pow2Height),
       GX_TRANSFER_FLIP_VERT(1) | GX_TRANSFER_OUT_TILED(1) | GX_TRANSFER_RAW_COPY(0) | GX_TRANSFER_IN_FORMAT(GPU_RGBA8) |
       GX_TRANSFER_OUT_FORMAT((u32) GPU_RGBA8) | GX_TRANSFER_SCALING(GX_TRANSFER_SCALE_NO));
 
       gspWaitForPPF();
       
       free(src);
-        linearFree(pow2Tex);
       return true;
     }
   return false;
@@ -811,6 +822,8 @@ void emulatorInitialize()
 void emulatorFinalize()
 {
     free(bottom_screen_buffer);
+    linearFree(border_image_texture_buffer);
+    if (borderTexture != NULL) gpu3dsDestroyTextureFromVRAM(borderTexture);
     
     consoleClear();
 

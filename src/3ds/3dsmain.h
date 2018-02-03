@@ -8,8 +8,14 @@ extern char romFileNameLastSelected[];
 
 extern uint8_t* bottom_screen_buffer;
 
+#include "3dsgpu.h"
+
 void turn_bottom_screen(bool on);
 void renderTopScreenBorder();
+extern u8* border_image_texture_buffer;
+extern SGPUTexture *borderTexture;
+void impl3dsClearBorderTexture();
+bool impl3dsLoadBorderTexture(char *imgFilePath);
 
 //---------------------------------------------------------
 // The different emulator states.

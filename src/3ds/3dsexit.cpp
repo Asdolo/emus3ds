@@ -23,6 +23,7 @@ void handleAptHook(APT_HookType hook, void* param)
             appExiting = 1;
             break;
         case APTHOOK_ONSUSPEND:
+            impl3dsClearBorderTexture();
             // Let's turn on the bottom screen just in case it's turned off
             gspLcdInit();
             GSPLCD_PowerOnBacklight(GSPLCD_SCREEN_BOTTOM);
@@ -33,6 +34,7 @@ void handleAptHook(APT_HookType hook, void* param)
             }
             break;
         case APTHOOK_ONSLEEP:
+            impl3dsClearBorderTexture();
             appSuspended = 1;
             if (emulator.emulatorState == EMUSTATE_EMULATE) {
                 snd3dsStopPlaying();
@@ -41,6 +43,12 @@ void handleAptHook(APT_HookType hook, void* param)
         case APTHOOK_ONRESTORE:
         case APTHOOK_ONWAKEUP:
             gpu3dsFixHang();
+            if (border_image_texture_buffer != NULL)
+            {
+                GX_DisplayTransfer((u32*)border_image_texture_buffer,GX_BUFFER_DIM(512, 256),(u32*)borderTexture->PixelData,GX_BUFFER_DIM(512, 256),
+                GX_TRANSFER_FLIP_VERT(1) | GX_TRANSFER_OUT_TILED(1) | GX_TRANSFER_RAW_COPY(0) | GX_TRANSFER_IN_FORMAT(GPU_RGBA8) |
+                GX_TRANSFER_OUT_FORMAT((u32) GPU_RGBA8) | GX_TRANSFER_SCALING(GX_TRANSFER_SCALE_NO));
+            }            
             
             gspLcdInit();
             if (bottom_screen_buffer == NULL && emulator.emulatorState == EMUSTATE_EMULATE)
