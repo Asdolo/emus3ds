@@ -1152,7 +1152,7 @@ bool gpu3dsInitialize()
 
 	gfxSet3D(false);
 
-    u8 val = 0;
+    bool val = 0;
     APT_CheckNew3DS(&val);
     isNew3DS = (val != 0);
 

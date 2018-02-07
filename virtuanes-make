@@ -1,6 +1,6 @@
 DEVKITPRO := /c/workspace/forwarders/bubble2k16_forwarders/devkitPro
 DEVKITARM := $(DEVKITPRO)/devkitARM_r45
-CTRULIB := $(DEVKITPRO)/ctrulib
+CTRULIB := $(CURDIR)/ctrulib_fork
 
 #---------------------------------------------------------------------------------
 .SUFFIXES:

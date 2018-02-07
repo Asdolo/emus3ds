@@ -677,7 +677,7 @@ void setSampleRate(bool preserveState)
 
 	// compute a sample rate closes to 30000 kHz for old 3DS, and 44100 Khz for new 3DS.
 	//
-    u8 new3DS = false;
+    bool new3DS = false;
     APT_CheckNew3DS(&new3DS);
     if (new3DS)
         sampleRate = 44100;
@@ -1322,7 +1322,7 @@ bool impl3dsApplyAllSettings(bool updateGameSettings)
 
 	// compute a sample rate closes to 30000 kHz for old 3DS, and 44100 Khz for new 3DS.
 	//
-    u8 new3DS = false;
+    bool new3DS = false;
     APT_CheckNew3DS(&new3DS);
     PicoIn.lowPassFilter = 0;
     if (settings3DS.OtherOptions[SETTINGS_LOWPASSFILTER])

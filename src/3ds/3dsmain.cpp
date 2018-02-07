@@ -851,8 +851,8 @@ void emulatorFinalize()
 #endif
     ptmSysmExit ();
 
-    //printf("romfsExit:\n");
-    //romfsExit();
+    printf("romfsExit:\n");
+    romfsExit();
     
 #ifndef EMU_RELEASE
     printf("hidExit:\n");
@@ -863,11 +863,12 @@ void emulatorFinalize()
     printf("aptExit:\n");
 #endif
 	aptExit();
-    
+/*    
 #ifndef EMU_RELEASE
     printf("srvExit:\n");
 #endif
 	srvExit();
+*/
 }
 
 
@@ -1127,7 +1128,7 @@ int main()
 
 quit:
     if (emulator.emulatorState > 0 && settings3DS.AutoSavestate)
-        impl3dsLoadState(0);
+        impl3dsSaveState(0);
 
     printf("emulatorFinalize:\n");
     emulatorFinalize();
