@@ -77,14 +77,17 @@ SMenuItem optionsForStretch[] = {
     MENU_MAKE_DIALOG_ACTION (5, "VC - u/d crop",            "VC 284x240 - Crop 8 up/down (284x224)"),
     MENU_MAKE_DIALOG_ACTION (6, "VC - u/d crop and stretch","VC 284x240 - Crop 8 u/d and stretch to fill bars (304x240)"),
     MENU_MAKE_DIALOG_ACTION (7, "VC - l/r crop",            "VC 284x240 - Crop 8 left/right (266.25x240)"),
-    MENU_MAKE_DIALOG_ACTION (8, "VC - combo crop",          "VC 284x240 - Crop 8 u/d/l/r (266.25x224)"),
-    MENU_MAKE_DIALOG_ACTION (9, "VC - combo crop/stretch",  "VC 284x240 - Crop 8 u/d/l/r and stretch to fill bars (285.27x240 -- round to even)"),
+    MENU_MAKE_DIALOG_ACTION (8, "VC - l/r crop and stretch","VC 284x240 - Crop 8 left/right and stretch back to 284x240"),
+    MENU_MAKE_DIALOG_ACTION (9, "VC - combo crop",          "VC 284x240 - Crop 8 u/d/l/r (266.25x224)"),
+    MENU_MAKE_DIALOG_ACTION (10, "VC - combo crop/stretch", "VC 284x240 - Crop 8 u/d/l/r and stretch to fill bars (285.27x240 -- round to even)"),
     
-    MENU_MAKE_DIALOG_ACTION (10, "Fullscreen (FS)",         "Stretch to 400x240"),
-    MENU_MAKE_DIALOG_ACTION (11, "FS - u/d crop",           "400x240 - Crop 8 up/down (400x224)"),
-    MENU_MAKE_DIALOG_ACTION (12, "FS - u/d crop/stretch",   "400x240 - Crop 8 up/down and stretch to fill bars"),
-    MENU_MAKE_DIALOG_ACTION (13, "FS - l/r crop/stretch",   "400x240 - Crop 8 left/right and stretch to fill bars"),
-    MENU_MAKE_DIALOG_ACTION (14, "FS - combo crop/stretch", "400x240 - Crop 8 u/d/l/r and stretch to fill bars"),
+    MENU_MAKE_DIALOG_ACTION (11, "Fullscreen (FS)",         "Stretch to 400x240"),
+    MENU_MAKE_DIALOG_ACTION (12, "FS - u/d crop",           "400x240 - Crop 8 up/down (400x224)"),
+    MENU_MAKE_DIALOG_ACTION (13, "FS - u/d crop/stretch",   "400x240 - Crop 8 up/down and stretch to fill bars"),
+    MENU_MAKE_DIALOG_ACTION (14, "FS - l/r crop",           "400x240 - Crop 8 left/right (375x240 -- go up to even)"),
+    MENU_MAKE_DIALOG_ACTION (15, "FS - l/r crop/stretch",   "400x240 - Crop 8 left/right and stretch to fill bars"),
+    MENU_MAKE_DIALOG_ACTION (16, "FS - combo crop",         "400x240 - Crop 8 u/d/l/r (375x224 -- go up to even)"),
+    MENU_MAKE_DIALOG_ACTION (17, "FS - combo crop/stretch", "400x240 - Crop 8 u/d/l/r and stretch to fill bars"),
     MENU_MAKE_LASTITEM  ()
 };
 
@@ -776,6 +779,17 @@ void impl3dsRenderDrawTextureToFrameBuffer()
 			break;
 		case 8:
             gpu3dsSetTextureEnvironmentReplaceColor();
+            gpu3dsDrawRectangle(0, 0, 58, 240, 0, 0x000000ff);
+            gpu3dsDrawRectangle(342, 0, 400, 240, 0, 0x000000ff);
+
+            renderTopScreenBorder();
+
+            gpu3dsSetTextureEnvironmentReplaceTexture0();
+            gpu3dsBindTextureMainScreen(video3dsGetPreviousScreenTexture(), GPU_TEXUNIT0);
+			gpu3dsAddQuadVertexes(58, 0, 342, 240, 8.2 + 8, 0, 263.8 - 8, 240, 0);
+			break;
+		case 9:
+            gpu3dsSetTextureEnvironmentReplaceColor();
             gpu3dsDrawRectangle(0, 0, 67, 240, 0, 0x000000ff);
             gpu3dsDrawRectangle(333, 0, 400, 240, 0, 0x000000ff);
             gpu3dsDrawRectangle(67, 0, 333, 8, 0, 0x000000ff);
@@ -787,7 +801,7 @@ void impl3dsRenderDrawTextureToFrameBuffer()
             gpu3dsBindTextureMainScreen(video3dsGetPreviousScreenTexture(), GPU_TEXUNIT0);
 			gpu3dsAddQuadVertexes(67, 8, 333, 232, 8.2 + 8, 0 + 8, 263.8 - 8, 240 - 8, 0);
 			break;
-		case 9:
+		case 10:
             gpu3dsSetTextureEnvironmentReplaceColor();
             gpu3dsDrawRectangle(0, 0, 57, 240, 0, 0x000000ff);
             gpu3dsDrawRectangle(343, 0, 400, 240, 0, 0x000000ff);
@@ -799,12 +813,12 @@ void impl3dsRenderDrawTextureToFrameBuffer()
 			gpu3dsAddQuadVertexes(57, 0, 343, 240, 8.2 + 8, 0 + 8, 263.8 - 8, 240 - 8, 0);
 			break;
             
-		case 10:
+		case 11:
             gpu3dsSetTextureEnvironmentReplaceTexture0();
             gpu3dsBindTextureMainScreen(video3dsGetPreviousScreenTexture(), GPU_TEXUNIT0);
 			gpu3dsAddQuadVertexes(0, 0, 400, 240, 8.2, 0, 263.8, 240, 0);
 			break;
-		case 11:
+		case 12:
             gpu3dsSetTextureEnvironmentReplaceColor();
             gpu3dsDrawRectangle(0, 0, 400, 8, 0, 0x000000ff);
             gpu3dsDrawRectangle(0, 232, 400, 240, 0, 0x000000ff);
@@ -815,17 +829,41 @@ void impl3dsRenderDrawTextureToFrameBuffer()
             gpu3dsBindTextureMainScreen(video3dsGetPreviousScreenTexture(), GPU_TEXUNIT0);
 			gpu3dsAddQuadVertexes(0, 8, 400, 232, 8.2, 0 + 8, 263.8, 240 - 8, 0);
 			break;
-		case 12:
+		case 13:
             gpu3dsSetTextureEnvironmentReplaceTexture0();
             gpu3dsBindTextureMainScreen(video3dsGetPreviousScreenTexture(), GPU_TEXUNIT0);
 			gpu3dsAddQuadVertexes(0, 0, 400, 240, 8.2, 0 + 8, 263.8, 240 - 8, 0);
 			break;
-		case 13:
+		case 14:
+			gpu3dsSetTextureEnvironmentReplaceColor();
+            gpu3dsDrawRectangle(0, 0, 12, 240, 0, 0x000000ff);
+            gpu3dsDrawRectangle(388, 0, 400, 240, 0, 0x000000ff);
+
+            renderTopScreenBorder();
+			
+            gpu3dsSetTextureEnvironmentReplaceTexture0();
+            gpu3dsBindTextureMainScreen(video3dsGetPreviousScreenTexture(), GPU_TEXUNIT0);
+			gpu3dsAddQuadVertexes(12, 0, 388, 240, 8.2 + 8, 0, 263.8 - 8, 240, 0);
+			break;
+		case 15:
             gpu3dsSetTextureEnvironmentReplaceTexture0();
             gpu3dsBindTextureMainScreen(video3dsGetPreviousScreenTexture(), GPU_TEXUNIT0);
 			gpu3dsAddQuadVertexes(0, 0, 400, 240, 8.2 + 8, 0, 263.8 - 8, 240, 0);
 			break;
-		case 14:
+		case 16:
+			gpu3dsSetTextureEnvironmentReplaceColor();
+			gpu3dsDrawRectangle(0, 0, 12, 240, 0, 0x000000ff);
+            gpu3dsDrawRectangle(388, 0, 400, 240, 0, 0x000000ff);
+            gpu3dsDrawRectangle(12, 0, 388, 8, 0, 0x000000ff);
+            gpu3dsDrawRectangle(12, 232, 388, 240, 0, 0x000000ff);
+
+            renderTopScreenBorder();
+			
+            gpu3dsSetTextureEnvironmentReplaceTexture0();
+            gpu3dsBindTextureMainScreen(video3dsGetPreviousScreenTexture(), GPU_TEXUNIT0);
+			gpu3dsAddQuadVertexes(12, 8, 388, 232, 8.2 + 8, 0 + 8, 263.8 - 8, 240 - 8, 0);
+			break;
+		case 17:
             gpu3dsSetTextureEnvironmentReplaceTexture0();
             gpu3dsBindTextureMainScreen(video3dsGetPreviousScreenTexture(), GPU_TEXUNIT0);
 			gpu3dsAddQuadVertexes(0, 0, 400, 240, 8.2 + 8, 0 + 8, 263.8 - 8, 240 - 8, 0);
@@ -1182,7 +1220,7 @@ bool impl3dsReadWriteSettingsGlobal(bool writeMode)
     config3dsReadWriteInt32("#v1\n", NULL, 0, 0);
     config3dsReadWriteInt32("# Do not modify this file or risk losing your settings.\n", NULL, 0, 0);
 
-    config3dsReadWriteInt32("ScreenStretch=%d\n", &settings3DS.ScreenStretch, 0, 14);
+    config3dsReadWriteInt32("ScreenStretch=%d\n", &settings3DS.ScreenStretch, 0, 17);
     config3dsReadWriteInt32("HideUnnecessaryBottomScrText=%d\n", &settings3DS.HideUnnecessaryBottomScrText, 0, 1);
     config3dsReadWriteInt32("Font=%d\n", &settings3DS.Font, 0, 2);
     config3dsReadWriteInt32("UseGlobalButtonMappings=%d\n", &settings3DS.UseGlobalButtonMappings, 0, 1);
