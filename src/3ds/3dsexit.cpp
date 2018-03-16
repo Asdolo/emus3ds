@@ -17,17 +17,13 @@ void handleAptHook(APT_HookType hook, void* param)
 	{
         case APTHOOK_ONEXIT:
             // Let's turn on the bottom screen just in case it's turned off
-            gspLcdInit();
-            GSPLCD_PowerOnBacklight(GSPLCD_SCREEN_BOTTOM);
-            gspLcdExit();
+            turn_bottom_screen(TURN_ON);
             appExiting = 1;
             break;
         case APTHOOK_ONSUSPEND:
             impl3dsClearBorderTexture();
             // Let's turn on the bottom screen just in case it's turned off
-            gspLcdInit();
-            GSPLCD_PowerOnBacklight(GSPLCD_SCREEN_BOTTOM);
-            gspLcdExit();
+            turn_bottom_screen(TURN_ON);
             appSuspended = 1;
             if (emulator.emulatorState == EMUSTATE_EMULATE) {
                 snd3dsStopPlaying();
@@ -50,17 +46,15 @@ void handleAptHook(APT_HookType hook, void* param)
                 GX_TRANSFER_OUT_FORMAT((u32) GPU_RGBA8) | GX_TRANSFER_SCALING(GX_TRANSFER_SCALE_NO));
             }            
             
-            gspLcdInit();
             if (bottom_screen_buffer == NULL && emulator.emulatorState == EMUSTATE_EMULATE)
             {
                 // There's no bottom screen image AND the menu is closed, let's turn off the bottom screen
-                GSPLCD_PowerOffBacklight(GSPLCD_SCREEN_BOTTOM);
+                turn_bottom_screen(TURN_OFF);
             }
             else
             {
-                GSPLCD_PowerOnBacklight(GSPLCD_SCREEN_BOTTOM);
+                turn_bottom_screen(TURN_ON);
             }
-            gspLcdExit();
             
             appSuspended = 1;
             break;

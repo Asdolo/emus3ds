@@ -84,29 +84,6 @@ void clearTopScreenWithLogo()
     }
 }
 
-inline void clearBottomScreen() {
-    uint bytes = 0;
-    switch (gfxGetScreenFormat(GFX_BOTTOM))
-    {
-        case GSP_RGBA8_OES:
-            bytes = 4;
-            break;
-
-        case GSP_BGR8_OES:
-            bytes = 3;
-            break;
-
-        case GSP_RGB565_OES:
-        case GSP_RGB5_A1_OES:
-        case GSP_RGBA4_OES:
-            bytes = 2;
-            break;
-    }
-
-    u8 *frame = gfxGetFramebuffer(GFX_BOTTOM, GFX_LEFT, NULL, NULL);
-    memset(frame, 0, 320 * 240 * bytes);
-}
-
 void renderBottomScreenImage()
 {
     FILE *file = fopen("romfs:/bottom.bin", "rb");
@@ -144,9 +121,7 @@ void renderBottomScreenImage()
     else
     {  
         // There's no bottom screen image, let's turn off the bottom screen
-        gspLcdInit();
-        GSPLCD_PowerOffBacklight(GSPLCD_SCREEN_BOTTOM);
-        gspLcdExit();
+        turn_bottom_screen(TURN_OFF);
     }
 }
 
@@ -461,9 +436,7 @@ bool menuSelectedChanged(int ID, int value)
 void menuPause()
 {
     // Let's turn on the bottom screen just in case it's turned off
-    gspLcdInit();
-    GSPLCD_PowerOnBacklight(GSPLCD_SCREEN_BOTTOM);
-    gspLcdExit();
+    turn_bottom_screen(TURN_ON);
 
     gfxSetScreenFormat(GFX_BOTTOM, GSP_RGB565_OES);
     gfxSwapBuffersGpu();
