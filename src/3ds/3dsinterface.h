@@ -16,7 +16,7 @@ typedef struct
     //---------------------
     int     ScreenStretch = 0;              // 0 - no stretch, 1 - stretch full, 2 - aspect fit
 
-    int     ScreenWidth = 256;
+    int     ScreenWidth = 400;
 
     int     ScreenHeight = 240;
 

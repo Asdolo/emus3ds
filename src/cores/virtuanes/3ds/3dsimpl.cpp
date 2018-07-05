@@ -676,7 +676,7 @@ int lastWait = 0;
 
 void impl3dsRenderDrawTextureToFrameBuffer()
 {
-	t3dsStartTiming(14, "Draw Texture");
+    t3dsStartTiming(14, "Draw Texture");
 
     // needed to initialize these variables somewhere earlier to get it to compile. something about scope.
     int ScreenLeftEdge;
@@ -707,7 +707,7 @@ void impl3dsRenderDrawTextureToFrameBuffer()
     //
     
     gpu3dsSetTextureEnvironmentReplaceColor();
-			gpu3dsDrawRectangle(0, 0, ScreenLeftEdge, 240, 0, 0x000000ff);
+            gpu3dsDrawRectangle(0, 0, ScreenLeftEdge, 240, 0, 0x000000ff);
             gpu3dsDrawRectangle(ScreenRightEdge, 0, 400, 240, 0, 0x000000ff);
             gpu3dsDrawRectangle(ScreenLeftEdge, 0, ScreenRightEdge, ScreenTopEdge, 0, 0x000000ff);
             gpu3dsDrawRectangle(ScreenLeftEdge, ScreenBottomEdge, ScreenRightEdge, 240, 0, 0x000000ff);
@@ -716,15 +716,15 @@ void impl3dsRenderDrawTextureToFrameBuffer()
 			
             gpu3dsSetTextureEnvironmentReplaceTexture0();
             gpu3dsBindTextureMainScreen(video3dsGetPreviousScreenTexture(), GPU_TEXUNIT0);
-			gpu3dsAddQuadVertexes(ScreenLeftEdge, ScreenTopEdge, ScreenRightEdge, ScreenBottomEdge, 
+            gpu3dsAddQuadVertexes(ScreenLeftEdge, ScreenTopEdge, ScreenRightEdge, ScreenBottomEdge, 
             8 + settings3DS.CropLeft, 0 + settings3DS.CropTop, 264 - settings3DS.CropRight, 240 - settings3DS.CropBottom, 0);
 
     gpu3dsDrawVertexes();
-	t3dsEndTiming(14);
+    t3dsEndTiming(14);
 
-	t3dsStartTiming(15, "Flush");
-	gpu3dsFlush();
-	t3dsEndTiming(15);
+    t3dsStartTiming(15, "Flush");
+    gpu3dsFlush();
+    t3dsEndTiming(15);
 }
 
 
@@ -1070,14 +1070,14 @@ bool impl3dsReadWriteSettingsGlobal(bool writeMode)
     config3dsReadWriteInt32("#v1\n", NULL, 0, 0);
     config3dsReadWriteInt32("# Do not modify this file or risk losing your settings.\n", NULL, 0, 0);
 
-    config3dsReadWriteInt32("ScreenStretch=%d\n", &settings3DS.ScreenStretch, 0, 17);
-	config3dsReadWriteInt32("ScreenWidth=%d\n", &settings3DS.ScreenWidth, 0, 400);
-	config3dsReadWriteInt32("ScreenHeight=%d\n", &settings3DS.ScreenHeight, 0, 240);
-	config3dsReadWriteInt32("CropTop=%d\n", &settings3DS.CropTop, 0, 240);
-	config3dsReadWriteInt32("CropBottom=%d\n", &settings3DS.CropBottom, 0, 240);
-	config3dsReadWriteInt32("CropLeft=%d\n", &settings3DS.CropLeft, 0, 400);
-	config3dsReadWriteInt32("CropRight=%d\n", &settings3DS.CropRight, 0, 400);
-	config3dsReadWriteInt32("StretchToFill=%d\n", &settings3DS.StretchToFill, 0, 1);
+    config3dsReadWriteInt32("ScreenStretch=%d\n", &settings3DS.ScreenStretch, 0, 7);
+    config3dsReadWriteInt32("ScreenWidth=%d\n", &settings3DS.ScreenWidth, 0, 400);
+    config3dsReadWriteInt32("ScreenHeight=%d\n", &settings3DS.ScreenHeight, 0, 240);
+    config3dsReadWriteInt32("CropTop=%d\n", &settings3DS.CropTop, 0, 240);
+    config3dsReadWriteInt32("CropBottom=%d\n", &settings3DS.CropBottom, 0, 240);
+    config3dsReadWriteInt32("CropLeft=%d\n", &settings3DS.CropLeft, 0, 400);
+    config3dsReadWriteInt32("CropRight=%d\n", &settings3DS.CropRight, 0, 400);
+    config3dsReadWriteInt32("StretchToFill=%d\n", &settings3DS.StretchToFill, 0, 1);
     config3dsReadWriteInt32("HideUnnecessaryBottomScrText=%d\n", &settings3DS.HideUnnecessaryBottomScrText, 0, 1);
     config3dsReadWriteInt32("Font=%d\n", &settings3DS.Font, 0, 2);
     config3dsReadWriteInt32("UseGlobalButtonMappings=%d\n", &settings3DS.UseGlobalButtonMappings, 0, 1);
