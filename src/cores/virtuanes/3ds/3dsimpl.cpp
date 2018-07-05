@@ -678,197 +678,47 @@ void impl3dsRenderDrawTextureToFrameBuffer()
 {
 	t3dsStartTiming(14, "Draw Texture");
 
+    // needed to initialize these variables somewhere earlier to get it to compile. something about scope.
+    int ScreenLeftEdge;
+    int ScreenRightEdge;
+    int ScreenTopEdge;
+    int ScreenBottomEdge;
+
+    if (settings3DS.StretchToFill == 1) {
+        ScreenLeftEdge = (400 - settings3DS.ScreenWidth) / 2;
+        ScreenRightEdge = (400 + settings3DS.ScreenWidth) / 2;
+        ScreenTopEdge = (240 - settings3DS.ScreenHeight) / 2;
+        ScreenBottomEdge = (240 + settings3DS.ScreenHeight) / 2;
+    } else {
+        ScreenLeftEdge = (400 - settings3DS.ScreenWidth) / 2 + settings3DS.CropLeft;
+        ScreenRightEdge = (400 + settings3DS.ScreenWidth) / 2 - settings3DS.CropRight;
+        ScreenTopEdge = (240 - settings3DS.ScreenHeight) / 2 + settings3DS.CropTop;
+        ScreenBottomEdge = (240 + settings3DS.ScreenHeight) / 2 - settings3DS.CropBottom;
+    }
+    /*
+    // Alternative with four variable declarations total with four inline ifs.
+    ScreenLeftEdge = (400 - settings3DS.ScreenWidth) / 2 + (settings3DS.StretchToFill ? 0 : settings3DS.CropLeft);
+    ScreenRightEdge = (400 + settings3DS.ScreenWidth) / 2 - (settings3DS.StretchToFill ? 0 : settings3DS.CropRight);
+    ScreenTopEdge = (240 - settings3DS.ScreenHeight) / 2 + (settings3DS.StretchToFill ? 0 : settings3DS.CropTop);
+    ScreenBottomEdge = (240 + settings3DS.ScreenHeight) / 2 - (settings3DS.StretchToFill ? 0 : settings3DS.CropBottom);
+    */
+
     // Draw a black colored rectangle covering the entire screen.
     //
-	switch (settings3DS.ScreenStretch)
-	{
-		case 0:
-            gpu3dsSetTextureEnvironmentReplaceColor();
-            gpu3dsDrawRectangle(0, 0, 72, 240, 0, 0x000000ff);
-            gpu3dsDrawRectangle(328, 0, 400, 240, 0, 0x000000ff);
-
-            renderTopScreenBorder();
-
-            gpu3dsSetTextureEnvironmentReplaceTexture0();
-            gpu3dsBindTextureMainScreen(video3dsGetPreviousScreenTexture(), GPU_TEXUNIT0);
-			gpu3dsAddQuadVertexes(72, 0, 328, 240, 8, 0, 264, 240, 0);
-			break;
-		case 1:
-            gpu3dsSetTextureEnvironmentReplaceColor();
-            gpu3dsDrawRectangle(0, 0, 72, 240, 0, 0x000000ff);
-            gpu3dsDrawRectangle(328, 0, 400, 240, 0, 0x000000ff);
-            gpu3dsDrawRectangle(72, 0, 328, 8, 0, 0x000000ff);
-            gpu3dsDrawRectangle(72, 232, 328, 240, 0, 0x000000ff);
-
-			renderTopScreenBorder();
-
-            gpu3dsSetTextureEnvironmentReplaceTexture0();
-            gpu3dsBindTextureMainScreen(video3dsGetPreviousScreenTexture(), GPU_TEXUNIT0);
-			gpu3dsAddQuadVertexes(72, 8, 328, 232, 8, 0 + 8, 264, 240 - 8, 0);
-			break;
-		case 2:
-            gpu3dsSetTextureEnvironmentReplaceColor();
-            gpu3dsDrawRectangle(0, 0, 80, 240, 0, 0x000000ff);
-            gpu3dsDrawRectangle(320, 0, 400, 240, 0, 0x000000ff);
-
-            renderTopScreenBorder();
-
-            gpu3dsSetTextureEnvironmentReplaceTexture0();
-            gpu3dsBindTextureMainScreen(video3dsGetPreviousScreenTexture(), GPU_TEXUNIT0);
-			gpu3dsAddQuadVertexes(80, 0, 320, 240, 8 + 8, 0, 264 - 8, 240, 0);
-			break;
-		case 3:
-            gpu3dsSetTextureEnvironmentReplaceColor();
-            gpu3dsDrawRectangle(0, 0, 80, 240, 0, 0x000000ff);
-            gpu3dsDrawRectangle(320, 0, 400, 240, 0, 0x000000ff);
-            gpu3dsDrawRectangle(80, 0, 320, 8, 0, 0x000000ff);
-            gpu3dsDrawRectangle(80, 232, 320, 240, 0, 0x000000ff);
-
-			renderTopScreenBorder();
-
-            gpu3dsSetTextureEnvironmentReplaceTexture0();
-            gpu3dsBindTextureMainScreen(video3dsGetPreviousScreenTexture(), GPU_TEXUNIT0);
-			gpu3dsAddQuadVertexes(80, 8, 320, 232, 8 + 8, 0 + 8, 264 - 8, 240 - 8, 0);
-			break;
-            
-		case 4:
-            gpu3dsSetTextureEnvironmentReplaceColor();
-            gpu3dsDrawRectangle(0, 0, 58, 240, 0, 0x000000ff);
-            gpu3dsDrawRectangle(342, 0, 400, 240, 0, 0x000000ff);
-
-            renderTopScreenBorder();
-
-            gpu3dsSetTextureEnvironmentReplaceTexture0();
-            gpu3dsBindTextureMainScreen(video3dsGetPreviousScreenTexture(), GPU_TEXUNIT0);
-			gpu3dsAddQuadVertexes(58, 0, 342, 240, 8.2, 0, 263.8, 240, 0);
-			break;
-		case 5:
-            gpu3dsSetTextureEnvironmentReplaceColor();
-            gpu3dsDrawRectangle(0, 0, 58, 240, 0, 0x000000ff);
-            gpu3dsDrawRectangle(342, 0, 400, 240, 0, 0x000000ff);
-            gpu3dsDrawRectangle(58, 0, 342, 8, 0, 0x000000ff);
-            gpu3dsDrawRectangle(58, 232, 342, 240, 0, 0x000000ff);
-
-            renderTopScreenBorder();
-
-            gpu3dsSetTextureEnvironmentReplaceTexture0();
-            gpu3dsBindTextureMainScreen(video3dsGetPreviousScreenTexture(), GPU_TEXUNIT0);
-			gpu3dsAddQuadVertexes(58, 8, 342, 232, 8.2, 0 + 8, 263.8, 240 - 8, 0);
-			break;
-		case 6:
-            gpu3dsSetTextureEnvironmentReplaceColor();
-            gpu3dsDrawRectangle(0, 0, 48, 240, 0, 0x000000ff);
-            gpu3dsDrawRectangle(352, 0, 400, 240, 0, 0x000000ff);
-
-            renderTopScreenBorder();
-
-            gpu3dsSetTextureEnvironmentReplaceTexture0();
-            gpu3dsBindTextureMainScreen(video3dsGetPreviousScreenTexture(), GPU_TEXUNIT0);
-			gpu3dsAddQuadVertexes(48, 0, 352, 240, 8.2, 0 + 8, 263.8, 240 - 8, 0);
-			break;
-		case 7:
-            gpu3dsSetTextureEnvironmentReplaceColor();
-            gpu3dsDrawRectangle(0, 0, 67, 240, 0, 0x000000ff);
-            gpu3dsDrawRectangle(333, 0, 400, 240, 0, 0x000000ff);
-
-            renderTopScreenBorder();
-
-            gpu3dsSetTextureEnvironmentReplaceTexture0();
-            gpu3dsBindTextureMainScreen(video3dsGetPreviousScreenTexture(), GPU_TEXUNIT0);
-			gpu3dsAddQuadVertexes(67, 0, 333, 240, 8.2 + 8, 0, 263.8 - 8, 240, 0);
-			break;
-		case 8:
-            gpu3dsSetTextureEnvironmentReplaceColor();
-            gpu3dsDrawRectangle(0, 0, 58, 240, 0, 0x000000ff);
-            gpu3dsDrawRectangle(342, 0, 400, 240, 0, 0x000000ff);
-
-            renderTopScreenBorder();
-
-            gpu3dsSetTextureEnvironmentReplaceTexture0();
-            gpu3dsBindTextureMainScreen(video3dsGetPreviousScreenTexture(), GPU_TEXUNIT0);
-			gpu3dsAddQuadVertexes(58, 0, 342, 240, 8.2 + 8, 0, 263.8 - 8, 240, 0);
-			break;
-		case 9:
-            gpu3dsSetTextureEnvironmentReplaceColor();
-            gpu3dsDrawRectangle(0, 0, 67, 240, 0, 0x000000ff);
-            gpu3dsDrawRectangle(333, 0, 400, 240, 0, 0x000000ff);
-            gpu3dsDrawRectangle(67, 0, 333, 8, 0, 0x000000ff);
-            gpu3dsDrawRectangle(67, 232, 333, 240, 0, 0x000000ff);
-
-            renderTopScreenBorder();
-
-            gpu3dsSetTextureEnvironmentReplaceTexture0();
-            gpu3dsBindTextureMainScreen(video3dsGetPreviousScreenTexture(), GPU_TEXUNIT0);
-			gpu3dsAddQuadVertexes(67, 8, 333, 232, 8.2 + 8, 0 + 8, 263.8 - 8, 240 - 8, 0);
-			break;
-		case 10:
-            gpu3dsSetTextureEnvironmentReplaceColor();
-            gpu3dsDrawRectangle(0, 0, 57, 240, 0, 0x000000ff);
-            gpu3dsDrawRectangle(343, 0, 400, 240, 0, 0x000000ff);
-
-            renderTopScreenBorder();
-
-            gpu3dsSetTextureEnvironmentReplaceTexture0();
-            gpu3dsBindTextureMainScreen(video3dsGetPreviousScreenTexture(), GPU_TEXUNIT0);
-			gpu3dsAddQuadVertexes(57, 0, 343, 240, 8.2 + 8, 0 + 8, 263.8 - 8, 240 - 8, 0);
-			break;
-            
-		case 11:
-            gpu3dsSetTextureEnvironmentReplaceTexture0();
-            gpu3dsBindTextureMainScreen(video3dsGetPreviousScreenTexture(), GPU_TEXUNIT0);
-			gpu3dsAddQuadVertexes(0, 0, 400, 240, 8.2, 0, 263.8, 240, 0);
-			break;
-		case 12:
-            gpu3dsSetTextureEnvironmentReplaceColor();
-            gpu3dsDrawRectangle(0, 0, 400, 8, 0, 0x000000ff);
-            gpu3dsDrawRectangle(0, 232, 400, 240, 0, 0x000000ff);
-
-            renderTopScreenBorder();
-
-            gpu3dsSetTextureEnvironmentReplaceTexture0();
-            gpu3dsBindTextureMainScreen(video3dsGetPreviousScreenTexture(), GPU_TEXUNIT0);
-			gpu3dsAddQuadVertexes(0, 8, 400, 232, 8.2, 0 + 8, 263.8, 240 - 8, 0);
-			break;
-		case 13:
-            gpu3dsSetTextureEnvironmentReplaceTexture0();
-            gpu3dsBindTextureMainScreen(video3dsGetPreviousScreenTexture(), GPU_TEXUNIT0);
-			gpu3dsAddQuadVertexes(0, 0, 400, 240, 8.2, 0 + 8, 263.8, 240 - 8, 0);
-			break;
-		case 14:
-			gpu3dsSetTextureEnvironmentReplaceColor();
-            gpu3dsDrawRectangle(0, 0, 12, 240, 0, 0x000000ff);
-            gpu3dsDrawRectangle(388, 0, 400, 240, 0, 0x000000ff);
+    
+    gpu3dsSetTextureEnvironmentReplaceColor();
+			gpu3dsDrawRectangle(0, 0, ScreenLeftEdge, 240, 0, 0x000000ff);
+            gpu3dsDrawRectangle(ScreenRightEdge, 0, 400, 240, 0, 0x000000ff);
+            gpu3dsDrawRectangle(ScreenLeftEdge, 0, ScreenRightEdge, ScreenTopEdge, 0, 0x000000ff);
+            gpu3dsDrawRectangle(ScreenLeftEdge, ScreenBottomEdge, ScreenRightEdge, 240, 0, 0x000000ff);
 
             renderTopScreenBorder();
 			
             gpu3dsSetTextureEnvironmentReplaceTexture0();
             gpu3dsBindTextureMainScreen(video3dsGetPreviousScreenTexture(), GPU_TEXUNIT0);
-			gpu3dsAddQuadVertexes(12, 0, 388, 240, 8.2 + 8, 0, 263.8 - 8, 240, 0);
-			break;
-		case 15:
-            gpu3dsSetTextureEnvironmentReplaceTexture0();
-            gpu3dsBindTextureMainScreen(video3dsGetPreviousScreenTexture(), GPU_TEXUNIT0);
-			gpu3dsAddQuadVertexes(0, 0, 400, 240, 8.2 + 8, 0, 263.8 - 8, 240, 0);
-			break;
-		case 16:
-			gpu3dsSetTextureEnvironmentReplaceColor();
-			gpu3dsDrawRectangle(0, 0, 12, 240, 0, 0x000000ff);
-            gpu3dsDrawRectangle(388, 0, 400, 240, 0, 0x000000ff);
-            gpu3dsDrawRectangle(12, 0, 388, 8, 0, 0x000000ff);
-            gpu3dsDrawRectangle(12, 232, 388, 240, 0, 0x000000ff);
+			gpu3dsAddQuadVertexes(ScreenLeftEdge, ScreenTopEdge, ScreenRightEdge, ScreenBottomEdge, 
+            8 + settings3DS.CropLeft, 0 + settings3DS.CropTop, 264 - settings3DS.CropRight, 240 - settings3DS.CropBottom, 0);
 
-            renderTopScreenBorder();
-			
-            gpu3dsSetTextureEnvironmentReplaceTexture0();
-            gpu3dsBindTextureMainScreen(video3dsGetPreviousScreenTexture(), GPU_TEXUNIT0);
-			gpu3dsAddQuadVertexes(12, 8, 388, 232, 8.2 + 8, 0 + 8, 263.8 - 8, 240 - 8, 0);
-			break;
-		case 17:
-            gpu3dsSetTextureEnvironmentReplaceTexture0();
-            gpu3dsBindTextureMainScreen(video3dsGetPreviousScreenTexture(), GPU_TEXUNIT0);
-			gpu3dsAddQuadVertexes(0, 0, 400, 240, 8.2 + 8, 0 + 8, 263.8 - 8, 240 - 8, 0);
-			break;
-	}
     gpu3dsDrawVertexes();
 	t3dsEndTiming(14);
 
@@ -1221,6 +1071,13 @@ bool impl3dsReadWriteSettingsGlobal(bool writeMode)
     config3dsReadWriteInt32("# Do not modify this file or risk losing your settings.\n", NULL, 0, 0);
 
     config3dsReadWriteInt32("ScreenStretch=%d\n", &settings3DS.ScreenStretch, 0, 17);
+	config3dsReadWriteInt32("ScreenWidth=%d\n", &settings3DS.ScreenWidth, 0, 400);
+	config3dsReadWriteInt32("ScreenHeight=%d\n", &settings3DS.ScreenHeight, 0, 240);
+	config3dsReadWriteInt32("CropTop=%d\n", &settings3DS.CropTop, 0, 240);
+	config3dsReadWriteInt32("CropBottom=%d\n", &settings3DS.CropBottom, 0, 240);
+	config3dsReadWriteInt32("CropLeft=%d\n", &settings3DS.CropLeft, 0, 400);
+	config3dsReadWriteInt32("CropRight=%d\n", &settings3DS.CropRight, 0, 400);
+	config3dsReadWriteInt32("StretchToFill=%d\n", &settings3DS.StretchToFill, 0, 1);
     config3dsReadWriteInt32("HideUnnecessaryBottomScrText=%d\n", &settings3DS.HideUnnecessaryBottomScrText, 0, 1);
     config3dsReadWriteInt32("Font=%d\n", &settings3DS.Font, 0, 2);
     config3dsReadWriteInt32("UseGlobalButtonMappings=%d\n", &settings3DS.UseGlobalButtonMappings, 0, 1);
