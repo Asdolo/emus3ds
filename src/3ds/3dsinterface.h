@@ -16,6 +16,20 @@ typedef struct
     //---------------------
     int     ScreenStretch = 0;              // 0 - no stretch, 1 - stretch full, 2 - aspect fit
 
+    int     ScreenWidth = 400;
+
+    int     ScreenHeight = 240;
+
+    int     CropTop = 0;
+
+    int     CropBottom = 0;
+
+    int     CropLeft = 0;
+
+    int     CropRight = 0;
+
+    int     StretchToFill = 0;              // 1 -  stretch cropped image back to specified width/height
+
     int     StretchWidth, StretchHeight;
 
     int     CropPixels;
